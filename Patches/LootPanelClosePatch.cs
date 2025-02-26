@@ -1,9 +1,9 @@
-﻿using SPT.Reflection.Patching;
-using EFT.UI;
+﻿using EFT.UI;
 using EFT;
 using System;
 using System.Linq;
 using System.Reflection;
+using Aki.Reflection.Patching;
 using Comfort.Common;
 using HarmonyLib;
 using EFT.InventoryLogic;

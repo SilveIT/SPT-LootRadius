@@ -1,9 +1,9 @@
-﻿using SPT.Reflection.Patching;
-using EFT.InventoryLogic;
+﻿using EFT.InventoryLogic;
 using EFT.UI.DragAndDrop;
 using HarmonyLib;
 using System.Linq;
 using System.Reflection;
+using Aki.Reflection.Patching;
 
 namespace DrakiaXYZ.LootRadius.Patches
 {
@@ -18,7 +18,7 @@ namespace DrakiaXYZ.LootRadius.Patches
         }
 
         [PatchPrefix]
-        public static bool PatchPrefix(GridView __instance, ref bool __result, ItemContextAbstractClass itemContext)
+        public static bool PatchPrefix(GridView __instance, ref bool __result, AbstractItemContext itemContext)
         {
             // If not the RadiusStash GridView, run original
             IItemOwner gridOwner = _itemOwnerField.GetValue(__instance) as IItemOwner;

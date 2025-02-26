@@ -1,5 +1,4 @@
-﻿using SPT.Reflection.Patching;
-using EFT.Interactive;
+﻿using EFT.Interactive;
 using EFT.UI;
 using EFT;
 using HarmonyLib;
@@ -7,6 +6,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Aki.Reflection.Patching;
 using UnityEngine;
 using Comfort.Common;
 using DrakiaXYZ.LootRadius.Helpers;
@@ -30,7 +30,7 @@ namespace DrakiaXYZ.LootRadius.Patches
 
         protected override MethodBase GetTargetMethod()
         {
-            _addMethod = AccessTools.Method(typeof(StashGridClass), "Add", new Type[] { typeof(Item) });
+            _addMethod = AccessTools.Method(typeof(StashGrid), "Add", new Type[] { typeof(Item) });
             _removeMethod = AccessTools.Method(typeof(ItemAddress), "Remove");
 
             // Find the stash interface variable, based on the implemented types of the SimpleStashPanel
@@ -56,7 +56,7 @@ namespace DrakiaXYZ.LootRadius.Patches
         public static async void PatchPostfix(
             ItemsPanel __instance,
             Task __result,
-            ItemContextAbstractClass sourceContext,
+            AbstractItemContext sourceContext,
             LootItemClass lootItem,
             InventoryControllerClass inventoryController,
             ItemsPanel.EItemsTab currentTab,
@@ -85,14 +85,14 @@ namespace DrakiaXYZ.LootRadius.Patches
             AddAllowedItems(grid, nearbyItemColliders, false);
 
             // Show the stash in the inventory panel
-            ____simpleStashPanel.Configure(_stash, inventoryController, sourceContext.CreateChild(_stash), true);
+            ____simpleStashPanel.Configure(_stash, inventoryController, sourceContext.CreateChild(_stash));
             _stashViewField.SetValue(__instance, ____simpleStashPanel);
             ____simpleStashPanel.Show(inventoryController, currentTab);
 
             _rightPaneField.SetValue(ItemUiContext.Instance, new LootItemClass[] { _stash });
         }
 
-        private static void AddAllowedItems(StashGridClass grid, Collider[] colliders, bool ignoreLineOfSight)
+        private static void AddAllowedItems(StashGrid grid, Collider[] colliders, bool ignoreLineOfSight)
         {
             foreach (Collider collider in colliders)
             {
