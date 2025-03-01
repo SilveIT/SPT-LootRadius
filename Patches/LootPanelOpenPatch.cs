@@ -22,13 +22,9 @@ namespace DrakiaXYZ.LootRadius.Patches
         private static MethodInfo _removeMethod;
         private static LayerMask _interactiveLayerMask = 1 << LayerMask.NameToLayer("Interactive");
 
-        private static StashClass _stash
-        {
-            get { return LootRadiusPlugin.RadiusStash; }
-            set { LootRadiusPlugin.RadiusStash = value; }
-        }
+        private static StashClass Stash => LootRadiusPlugin.RadiusStash;
 
-        protected override MethodBase GetTargetMethod()
+            protected override MethodBase GetTargetMethod()
         {
             _addMethod = AccessTools.Method(typeof(StashGrid), "Add", new Type[] { typeof(Item) });
             _removeMethod = AccessTools.Method(typeof(ItemAddress), "Remove");
@@ -72,7 +68,46 @@ namespace DrakiaXYZ.LootRadius.Patches
                 return;
             }
 
-            var grid = _stash.Grids[0];
+            if (____simpleStashPanel == null)
+            {
+                Logger.LogError("[LootPanelOpenPatch] ____simpleStashPanel == null");
+                return;
+            }
+
+            if (inventoryController == null)
+            {
+                Logger.LogError("[LootPanelOpenPatch] inventoryController == null");
+                return;
+            }
+
+            if (sourceContext == null)
+            {
+                Logger.LogError("[LootPanelOpenPatch] sourceContext == null");
+                return;
+            }
+            LootRadiusPlugin.InitFakeStash();
+            if (Stash == null)
+            {
+                Logger.LogError("[LootPanelOpenPatch] _stash == null");
+                return;
+            }
+            if (Stash.Grids.Length == 0)
+            {
+                Logger.LogError("[LootPanelOpenPatch] _stash.Grids.Length == 0");
+                return;
+            }
+            var grid = Stash.Grids[0];
+            if (Stash.Grids[0] == null)
+            {
+                Logger.LogError("[LootPanelOpenPatch] _stash.Grids[0] == null");
+                return;
+            }
+
+            if (Singleton<GameWorld>.Instance.MainPlayer == null)
+            {
+                Logger.LogError("[LootPanelOpenPatch] Singleton<GameWorld>.Instance.MainPlayer == null");
+                return;
+            }
             Vector3 playerPosition = Singleton<GameWorld>.Instance.MainPlayer.Position;
 
             // First find any items directly near the player's feet, to allow them to loot things like items slightly under the floor
@@ -85,11 +120,11 @@ namespace DrakiaXYZ.LootRadius.Patches
             AddAllowedItems(grid, nearbyItemColliders, false);
 
             // Show the stash in the inventory panel
-            ____simpleStashPanel.Configure(_stash, inventoryController, sourceContext.CreateChild(_stash));
+            ____simpleStashPanel.Configure(Stash, inventoryController, sourceContext.CreateChild(Stash));
             _stashViewField.SetValue(__instance, ____simpleStashPanel);
             ____simpleStashPanel.Show(inventoryController, currentTab);
 
-            _rightPaneField.SetValue(ItemUiContext.Instance, new LootItemClass[] { _stash });
+            _rightPaneField.SetValue(ItemUiContext.Instance, new LootItemClass[] { Stash });
         }
 
         private static void AddAllowedItems(StashGrid grid, Collider[] colliders, bool ignoreLineOfSight)

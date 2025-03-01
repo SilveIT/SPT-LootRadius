@@ -14,11 +14,7 @@ namespace DrakiaXYZ.LootRadius.Patches
     {
         private static MethodInfo _addMethod;
 
-        private static StashClass _stash
-        {
-            get { return LootRadiusPlugin.RadiusStash; }
-            set { LootRadiusPlugin.RadiusStash = value; }
-        }
+        private static StashClass Stash => LootRadiusPlugin.RadiusStash;
 
         protected override MethodBase GetTargetMethod()
         {
@@ -30,12 +26,12 @@ namespace DrakiaXYZ.LootRadius.Patches
         [PatchPostfix]
         public static void PatchPostfix()
         {
-            if (_stash == null)
+            if (Stash == null)
             {
                 return;
             }
 
-            var grid = _stash.Grids[0];
+            var grid = Stash.Grids[0];
 
             // Store a copy of the items, so we can restore their state or throw them as loose loot
             var items = grid.Items.ToList();
